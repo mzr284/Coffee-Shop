@@ -8,6 +8,7 @@ class UpdateLastSeen:
         self.get_response = get_response
 
     def __call__(self, request):
+        Response = self.get_response(request)
         if request.user.is_authenticated:
             User.objects.filter(id=request.user.id).update(last_seen=timezone.now())
-        return self.get_response(request)
+        return Response

@@ -55,8 +55,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.CharField(_("email"), max_length=40, blank=True, null=True)
     is_staff = models.BooleanField(_("is staff"), default=False)
     is_active = models.BooleanField(_("is active"), default=True)
-    data_joined = models.DateTimeField(_("date join"), blank=True, null=True)
-    last_seen = models.DateTimeField(_("last seen"), blank=True, null=True)
+    data_joined = models.DateTimeField(_("date join"), auto_now_add=True, blank=True, null=True)
+    last_seen = models.DateTimeField(_("last seen"), default=timezone.now()
+                                    , blank=True, null=True)
 
     objects = UserManager()
 
@@ -69,3 +70,18 @@ class User(AbstractBaseUser, PermissionsMixin):
         verbose_name_plural = _("users")
 
 
+
+class UserPofile(models.Model):
+    user = models.OneToOneField(User, verbose_name=_("user"), on_delete=models.CASCADE, related_name="user")
+    avatar = models.ImageField(_("avatar"), blank=True, null=True, upload_to="users/%Y/%m/%d/")
+    birthday = models.DateField(_("birthday"), blank=True, null=True)
+    bio = models.TextField(_("bio"), blank=True)
+    nick_name = models.CharField(_("nick name"), max_length=20, blank=True)
+
+    class Meta:
+        db_table = "users profile"
+        verbose_name = _("user profile")
+        verbose_name_plural = _("users profile")
+
+    def __str__(self):
+        return self.user.username
