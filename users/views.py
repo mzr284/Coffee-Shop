@@ -1,4 +1,5 @@
 import random
+import uuid
 from rest_framework import status
 from django.core.cache import cache
 from rest_framework.response import Response
@@ -8,20 +9,20 @@ from .serializer import UserSerializer
 
 
 
-class UserListView(APIView):
-
-    def get(self, request):
-        users = User.objects.all()
-        serial = UserSerializer(users, many=True, context={"request": request})
-        return Response(serial.data)
-
-
-class UserDetail(APIView):
-
-    def get(self, request, username):
-        user = User.objects.get(username=username)
-        serial = UserSerializer(user, context={"request": request})
-        return Response(serial.data)
+# class UserListView(APIView):
+#
+#     def get(self, request):
+#         users = User.objects.all()
+#         serial = UserSerializer(users, many=True, context={"request": request})
+#         return Response(serial.data)
+#
+#
+# class UserDetail(APIView):
+#
+#     def get(self, request, username):
+#         user = User.objects.get(username=username)
+#         serial = UserSerializer(user, context={"request": request})
+#         return Response(serial.data)
 
 
 class UserGetCode(APIView):
@@ -37,6 +38,7 @@ class UserGetCode(APIView):
         cache.set(str(phone_number), code, 1 * 60)
         return Response({"code": code}, status=status.HTTP_200_OK)
 
+
 logs = {}
 
 class UserRegister(APIView):
@@ -45,7 +47,7 @@ class UserRegister(APIView):
          phone_number = request.data.get("phone_number")
          code = request.data.get("code")
          cashed_code = cache.get(str(phone_number))
-
+         # give logs for wrong registered:
          if str(phone_number) in logs:
              if logs[str(phone_number)] == 3:
                  return Response(status=status.HTTP_401_UNAUTHORIZED)
@@ -59,4 +61,7 @@ class UserRegister(APIView):
 
          user = User.objects.create_user(phone_number=phone_number)
          user_profile = UserPofile.objects.create(user=user)
-         return Response({"message": "This phone number registered successfully"}, status=status.HTTP_201_CREATED)
+
+         token = str(uuid.uuid4())
+         return Response({"message": "This phone number registered successfully", "token": token}, status=status.HTTP_201_CREATED)
+

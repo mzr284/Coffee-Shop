@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 import os.path
 from pathlib import Path
 from .local_settings import *
+from datetime import datetime, timedelta
 
 from django.conf.global_settings import MEDIA_ROOT, MEDIA_URL, AUTH_USER_MODEL
 
@@ -38,6 +39,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'products',
     'users',
+    'rest_framework_simplejwt',
 ]
 
 MIDDLEWARE = [
@@ -137,4 +139,17 @@ CACHES = {
         "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
         "LOCATION": "unique-snowflake",
     }
+}
+
+# Authentication
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
+}
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=1.5),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    # ...
 }

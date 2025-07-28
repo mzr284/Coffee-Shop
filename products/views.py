@@ -1,14 +1,18 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, viewsets
+from rest_framework.permissions import IsAuthenticated
 from .models import Category, Product
 from .serializer import CategorySerialize, ProductSerializer
 
 
 
 class CategoryListView(APIView):
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
+        print(request.user)
+        print(request.auth)
         categories = Category.objects.all()
         serialzer = CategorySerialize(categories, many=True, context={'request': request})
         return Response(serialzer.data)
