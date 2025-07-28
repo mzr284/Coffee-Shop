@@ -12,6 +12,8 @@ class UserManager(BaseUserManager):
     def _create_user(self, username, phone_number, email, password, is_staff, is_superuser, **extra_field):
         if username is None:
             raise ValueError("username cannot Null")
+        # if is_superuser is None:
+        #     is_superuser = False
         email = self.normalize_email(email)
         user = self.model(username=username, phone_number=phone_number, email=email, is_active=True,
                           is_staff=is_staff, is_superuser=is_superuser, data_joined=timezone.now(), **extra_field
@@ -36,7 +38,8 @@ class UserManager(BaseUserManager):
         if is_staff is None:
             is_staff = False
 
-        return self._create_user(username, phone_number, email, password, is_staff, **extra_field)
+
+        return self._create_user(username, phone_number, email, password, is_staff, is_superuser=False, **extra_field)
 
     def create_superuser(self, username, phone_number, email, password, **extra_field):
         return self._create_user(username, phone_number, email, password, True, True, **extra_field)
